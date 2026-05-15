@@ -1,0 +1,43 @@
+# ======================
+# Credenciais e ambiente
+# ======================
+.env
+
+# ======================
+# Relatórios e artefatos gerados
+# ======================
+reports/
+
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# ======================
+# Ambientes virtuais
+# ======================
+.venv/
+venv/
+env/
+
+# ======================
+# Playwright
+# ======================
+# Browsers baixados localmente (cada dev/CI instala com `playwright install`)
+playwright-browsers/
+
+# ======================
+# Editores e IDEs
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# Sistema operacional
+# ======================
+.DS_Store
+Thumbs.db
