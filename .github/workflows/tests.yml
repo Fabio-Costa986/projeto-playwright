@@ -1,0 +1,88 @@
+name: Testes Playwright
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Testes de API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Instalar browsers do Playwright
+        run: playwright install chromium --with-deps
+
+      - name: Executar testes de API
+        env:
+          BASE_URL_API: ${{ secrets.BASE_URL_API || 'https://serverest.dev' }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'fulano@qa.com' }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'teste' }}
+        run: pytest -m api
+
+      - name: Publicar relatório de API
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-api
+          path: reports/
+          retention-days: 7
+
+  frontend-tests:
+    name: Testes de Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Instalar browsers do Playwright
+        run: playwright install chromium --with-deps
+
+      - name: Executar testes de Frontend
+        env:
+          BASE_URL_API: ${{ secrets.BASE_URL_API || 'https://serverest.dev' }}
+          BASE_URL_FRONT: ${{ secrets.BASE_URL_FRONT || 'https://front.serverest.dev' }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'fulano@qa.com' }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'teste' }}
+        run: pytest -m frontend
+
+      - name: Publicar relatório de Frontend
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-frontend
+          path: reports/
+          retention-days: 7
+
+      - name: Publicar traces de falhas
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-falhas
+          path: reports/traces/
+          retention-days: 7
